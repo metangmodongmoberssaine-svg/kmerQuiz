@@ -6,11 +6,11 @@ import com.KmerQuiz.dto.QuestionResponseDTO;
 import java.util.List;
 
 public interface QuestionServiceInt {
-    QuestionResponseDTO save(QuestionRequestDTO questionRequestDTO);
-    QuestionResponseDTO update(QuestionRequestDTO questionRequestDTO);
-
-    List<QuestionResponseDTO> FindAll();
-    void deleteById(Long idQuestion);
-    List<String> getAllLabelQuestion(Long idQuestion);
-
+    QuestionResponseDTO createQuestion(QuestionRequestDTO requestDTO);
+    QuestionResponseDTO updateQuestion(Long idQuestion, QuestionRequestDTO requestDTO);
+    QuestionResponseDTO getQuestionById(Long idQuestion);
+    List<QuestionResponseDTO> getAllQuestions();
+    List<QuestionResponseDTO> getQuestionsByDifficulty(Long idDifficulty);
+    List<QuestionResponseDTO> getQuestionsByCategory(Long idCategory);
+    void deleteQuestion(Long idQuestion);
 }

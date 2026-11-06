@@ -6,7 +6,6 @@ import com.KmerQuiz.entities.Difficulty;
 import com.KmerQuiz.exceptions.DuplicatedRessourcException;
 import com.KmerQuiz.exceptions.RessourceNotFoundException;
 import com.KmerQuiz.mappers.DifficultyMapper;
-import com.KmerQuiz.mappers.QuestionMapper;
 import com.KmerQuiz.repositories.DifficultyRepository;
 import com.KmerQuiz.services.Interface.DifficultyServiceInt;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,6 @@ public class DifficultyService implements DifficultyServiceInt {
 
     private final DifficultyRepository difficultyRepository;
     private final DifficultyMapper difficultyMapper;
-    private final QuestionMapper questionMapper;
 
     public DifficultyService(DifficultyRepository difficultyRepository, DifficultyMapper difficultyMapper) {
         this.difficultyRepository = difficultyRepository;

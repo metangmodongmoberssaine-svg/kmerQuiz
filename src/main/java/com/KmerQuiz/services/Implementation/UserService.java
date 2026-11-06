@@ -30,7 +30,28 @@ public class UserService implements UserServiceInt {
     }
 
     @Override
+    public UserResponseDTO createUser(UserRequestDTO requestDTO) {
+        return registerUser(requestDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> findAllUsers() {
+        return getAllUsers();
+    }
+
+    @Override
     public UserResponseDTO registerUser(UserRequestDTO requestDTO) {
+        if (isBlank(requestDTO.pseudoUser())) {
+            throw new IllegalArgumentException("pseudoUser est obligatoire");
+        }
+        if (isBlank(requestDTO.phoneUser())) {
+            throw new IllegalArgumentException("phoneUser est obligatoire");
+        }
+        if (isBlank(requestDTO.passwordUser())) {
+            throw new IllegalArgumentException("passwordUser est obligatoire");
+        }
+
         String userId = requestDTO.idUser();
         if (userId == null || userId.isBlank()) {
             userId = Generator.generateUserId();
@@ -139,5 +160,9 @@ public class UserService implements UserServiceInt {
             return user.getPasswordUser() != null && user.getPasswordUser().equals(password);
         }
         return false;
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 }
