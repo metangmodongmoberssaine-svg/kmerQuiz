@@ -1,16 +1,19 @@
 package com.KmerQuiz.services.Interface;
 
-import com.KmerQuiz.dto.QuestionRequestDTO;
-import com.KmerQuiz.dto.QuestionResponseDTO;
+import com.KmerQuiz.dto.QuizRequestDTO;
+import com.KmerQuiz.dto.QuizResponseDTO;
+import com.KmerQuiz.utils.PlayStatus;
 
 import java.util.List;
 
-public interface QuestionServiceInt {
-    QuestionResponseDTO createQuestion(QuestionRequestDTO requestDTO);
-    QuestionResponseDTO updateQuestion(Long idQuestion, QuestionRequestDTO requestDTO);
-    QuestionResponseDTO getQuestionById(Long idQuestion);
-    List<QuestionResponseDTO> getAllQuestions();
-    List<QuestionResponseDTO> getQuestionsByDifficulty(Long idDifficulty);
-    List<QuestionResponseDTO> getQuestionsByCategory(Long idCategory);
-    void deleteQuestion(Long idQuestion);
+public interface QuizServiceInt {
+    QuizResponseDTO createQuiz(QuizRequestDTO requestDTO);
+    QuizResponseDTO updateQuiz(Long idQuiz, QuizRequestDTO requestDTO);
+    QuizResponseDTO getQuizById(Long idQuiz);
+    List<QuizResponseDTO> getAllQuizzes();
+    List<QuizResponseDTO> getQuizzesByUser(String idUser);
+    List<QuizResponseDTO> getQuizzesByParty(Long codeParty);
+    List<QuizResponseDTO> getQuizzesByStatus(PlayStatus status);
+    QuizResponseDTO validateQuiz(Long idQuiz, boolean isValid);
+    void deleteQuiz(Long idQuiz);
 }
