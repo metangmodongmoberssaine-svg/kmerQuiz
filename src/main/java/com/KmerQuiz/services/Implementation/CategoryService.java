@@ -13,12 +13,12 @@ import java.util.List;
 
 @Service
 @Transactional
-public class CategoryServiceInt implements com.KmerQuiz.services.Interface.CategoryServiceInt {
+public class CategoryService implements com.KmerQuiz.services.Interface.CategoryServiceInt {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
-    public CategoryServiceInt(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    public CategoryService(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
     }

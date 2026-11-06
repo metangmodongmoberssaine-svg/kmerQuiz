@@ -6,13 +6,14 @@ import com.KmerQuiz.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
 
-    @Mapping(source = "idUser", target = "IdUser")
     UserResponseDTO toResponseDTO(User user);
 
     @Mapping(target = "inscriptionDataUser", expression = "java(new java.util.Date())")
@@ -22,6 +23,7 @@ public interface UserMapper {
 
     List<UserResponseDTO> toResponseDTOList(List<User> users);
 
+    // Les champs null du DTO n'écrasent pas les valeurs existantes
     @Mapping(target = "idUser", ignore = true)
     @Mapping(target = "inscriptionDataUser", ignore = true)
     @Mapping(target = "roleUser", ignore = true)
