@@ -18,25 +18,21 @@ public class DifficultyController {
 
     private final DifficultyServiceInt difficultyService;
 
-    // Créer un niveau de difficulté
     @PostMapping
     public ResponseEntity<DifficultyDTO> createDifficulty(@Valid @RequestBody DifficultyRequestDTO requestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(difficultyService.createDifficulty(requestDTO));
     }
 
-    // Afficher tous les niveaux
     @GetMapping
     public ResponseEntity<List<DifficultyDTO>> findAll() {
         return ResponseEntity.ok(difficultyService.getAllDifficulties());
     }
 
-    // Afficher un niveau
     @GetMapping("/{idDifficulty}")
     public ResponseEntity<DifficultyDTO> findById(@PathVariable Long idDifficulty) {
         return ResponseEntity.ok(difficultyService.getDifficultyById(idDifficulty));
     }
 
-    // Modifier un niveau
     @PutMapping("/{idDifficulty}")
     public ResponseEntity<DifficultyDTO> updateDifficulty(
             @PathVariable Long idDifficulty,
