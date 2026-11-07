@@ -12,7 +12,7 @@ import jakarta.validation.constraints.Size;
 import java.util.Date;
 
 public record UserRequestDTO (
-    @NotBlank
+
     @Size(min = 8, max = 10)
     String idUser,
     String pseudoUser,
