@@ -1,6 +1,7 @@
 package com.KmerQuiz.entities;
 
 import com.KmerQuiz.utils.RoleUser;
+import com.KmerQuiz.utils.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -112,5 +113,9 @@ public class User {
 
     public void setQuizList(List<Quiz> quizList) {
         this.quizList = quizList;
+    }
+
+        public UserStatus getStatusUser() {
+        return statusUser;
     }
 }
