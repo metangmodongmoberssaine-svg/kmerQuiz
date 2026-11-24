@@ -12,4 +12,6 @@ public interface UserGainRepository extends JpaRepository<UserGain, IdUserGain> 
     List<UserGain> findByIdUserGain_IdUser(String idUser);
     List<UserGain> findByIdUserGain_IdGain(Long idGain);
     boolean existsByIdUserGain_IdUserAndIdUserGain_IdGain(String idUser, Long idGain);
+
+    boolean existsByIdUserGain_IdUser(String idUser);
 }

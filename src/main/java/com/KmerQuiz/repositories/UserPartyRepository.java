@@ -13,4 +13,6 @@ public interface UserPartyRepository extends JpaRepository<UserParty, IdUserPart
     List<UserParty> findByIdUserParty_CodeParty(Long codeParty);
     List<UserParty> findByIdUserParty_CodePartyOrderByScorePlayerDesc(Long codeParty);
     boolean existsByIdUserParty_IdUserAndIdUserParty_CodeParty(String idUser, Long codeParty);
+
+    List<UserParty> findAllByIdUserParty_IdUser(Object idUser);
 }

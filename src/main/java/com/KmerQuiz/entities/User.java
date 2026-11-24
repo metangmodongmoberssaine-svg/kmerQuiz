@@ -48,4 +48,7 @@ public class User {
     private List<Quiz> quizList;
 
 
+    public User orElseThrow(Object o) {
+        return null;
+    }
 }

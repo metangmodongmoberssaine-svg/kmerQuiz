@@ -58,4 +58,8 @@ public class Generator {
         }
         return sb.toString();
     }
+
+    public String generateUserID(RoleUser roleUser) {
+            return null;
+    }
 }

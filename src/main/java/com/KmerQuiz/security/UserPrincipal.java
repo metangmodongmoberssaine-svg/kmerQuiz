@@ -22,49 +22,33 @@ public class UserPrincipal implements UserDetails {
     private final List<SimpleGrantedAuthority> authorities;
 
     public UserPrincipal(User user) {
-        this.idUser =user.getIdUser();
+        this.idUser = user.getIdUser();
         this.pseudoUser = user.getPseudoUser();
         this.passwordUser = user.getPasswordUser();
         this.roleUser = user.getRoleUser();
-        this.statusUser = UserStatus.valueOf(user.getStatusUser());
+        this.statusUser = user.getStatusUser() == null
+                ? null : UserStatus.valueOf(user.getStatusUser());
         this.authorities = roleUser.getAuthorities();
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
+    public Collection<? extends GrantedAuthority> getAuthorities() { return authorities; }
 
     @Override
-    public @Nullable String getPassword() {
-        return passwordUser;
-    }
+    public String getPassword() { return passwordUser; }
 
     @Override
-    public String getUsername() {
-        return "";
-    }
+    public String getUsername() { return pseudoUser; }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
+    public boolean isAccountNonExpired() { return true; }
 
     @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
+    public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() {
-        return false;
-    }
-
-
-
+    public boolean isEnabled() { return true; }
 }

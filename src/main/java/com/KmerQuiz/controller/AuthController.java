@@ -14,14 +14,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -29,21 +30,20 @@ public class AuthController {
     private final UserServiceInt userService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO request) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.pseudoUser(), request.passwordUser()));
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Pseudo ou mot de passe incorrect."));
+        }
 
-        Authentication authentification = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.pseudoUser(),
-                        request.passwordUser()
-                )
-        );
+        String token = jwtService.generateToken(request.pseudoUser());
+        UserResponseDTO user = userService.findUserByUserToken(request.pseudoUser());
 
-        String token = jwtService.generateToken(authentification.getName());
-
-        return ResponseEntity.ok(
-                new AuthResponseDTO(token, "Bearer", null)
-        );
-
+        return ResponseEntity.ok(new AuthResponseDTO(token, "Bearer", user));
     }
 
     @PostMapping("/register")
@@ -51,14 +51,11 @@ public class AuthController {
 
         UserResponseDTO user = userService.createUser(request);
 
-        Authentication authentication = authenticationManager.authenticate(
+        authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.pseudoUser(),
-                        request.passwordUser()
-                )
-        );
+                        request.pseudoUser(), request.passwordUser()));
 
-        String token = jwtService.generateToken(authentication.getName());
+        String token = jwtService.generateToken(request.pseudoUser());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new AuthResponseDTO(token, "Bearer", user));
@@ -66,10 +63,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-
         SecurityContextHolder.clearContext();
-
         return ResponseEntity.noContent().build();
-
     }
 }

@@ -5,106 +5,74 @@ import com.KmerQuiz.dto.UserResponseDTO;
 import com.KmerQuiz.entities.User;
 import com.KmerQuiz.exceptions.DuplicatedRessourcException;
 import com.KmerQuiz.exceptions.RessourceNotFoundException;
+import com.KmerQuiz.mappers.PartyMapper;
+import com.KmerQuiz.mappers.UserGainMapper;
 import com.KmerQuiz.mappers.UserMapper;
+import com.KmerQuiz.repositories.UserGainRepository;
+import com.KmerQuiz.repositories.UserPartyRepository;
 import com.KmerQuiz.repositories.UserRepository;
 import com.KmerQuiz.services.Interface.UserServiceInt;
-import com.KmerQuiz.utils.Generator;
 import com.KmerQuiz.utils.RoleUser;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.generator.Generator;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class UserService implements UserServiceInt {
 
     private final UserRepository userRepository;
+    private final Generator generator;
     private final UserMapper userMapper;
-
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-    }
-
+    private final PartyMapper partyMapper;
+    private final UserGainMapper userGainMapper;
+    private final UserGainRepository userGainRepository;
+    private final UserPartyRepository userPartyRepository;
+    private final PasswordEncoder passwordEncoder;
     @Override
-    public UserResponseDTO createUser(UserRequestDTO requestDTO) {
-        return registerUser(requestDTO);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserResponseDTO> findAllUsers() {
-        return getAllUsers();
-    }
-
-    @Override
-    public UserResponseDTO registerUser(UserRequestDTO requestDTO) {
-        if (isBlank(requestDTO.pseudoUser())) {
-            throw new IllegalArgumentException("pseudoUser est obligatoire");
+    public UserResponseDTO createUser(UserRequestDTO dto) {
+        if (userRepository.existsByPseudoUser(dto.pseudoUser())) {
+            throw new DuplicatedRessourcException("User", "pseudoUser", dto.pseudoUser());
         }
-        if (isBlank(requestDTO.phoneUser())) {
-            throw new IllegalArgumentException("phoneUser est obligatoire");
-        }
-        if (isBlank(requestDTO.passwordUser())) {
-            throw new IllegalArgumentException("passwordUser est obligatoire");
+        if (dto.emailUser() != null && userRepository.existsByEmailUser(dto.emailUser())) {
+            throw new DuplicatedRessourcException("User", "emailUser", dto.emailUser());
         }
 
-        String userId = requestDTO.idUser();
-        if (userId == null || userId.isBlank()) {
-            userId = Generator.generateUserId();
-        }
-
-        if (userRepository.existsById(userId)) {
-            throw new DuplicatedRessourcException("User", "idUser", userId);
-        }
-
-        if (requestDTO.pseudoUser() != null && userRepository.existsByPseudoUser(requestDTO.pseudoUser())) {
-            throw new DuplicatedRessourcException("User", "pseudoUser", requestDTO.pseudoUser());
-        }
-
-        if (requestDTO.emailUser() != null && userRepository.existsByEmailUser(requestDTO.emailUser())) {
-            throw new DuplicatedRessourcException("User", "emailUser", requestDTO.emailUser());
-        }
-
-        if (requestDTO.phoneUser() != null && userRepository.existsByPhoneUser(requestDTO.phoneUser())) {
-            throw new DuplicatedRessourcException("User", "phoneUser", requestDTO.phoneUser());
-        }
-
-        User user = userMapper.toEntity(requestDTO);
-        user.setIdUser(userId);
-        user.setRoleUser(RoleUser.Player);
+        User user = userMapper.toEntity(dto);
+        user.setIdUser("USR-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        user.setPasswordUser(passwordEncoder.encode(dto.passwordUser()));
+        user.setRoleUser(RoleUser.Player);          // jamais lu depuis la requete
+        user.setStatusUser("ACTIVE");
         user.setInscriptionDataUser(new Date());
 
-        User savedUser = userRepository.save(user);
-        return userMapper.toDTO(savedUser);
+        return userMapper.toDTO(userRepository.save(user));
     }
 
     @Override
-    public UserResponseDTO updateUser(String idUser, UserRequestDTO requestDTO) {
-        User existingUser = userRepository.findById(idUser)
+    public UserResponseDTO updateUser(String idUser, UserRequestDTO dto) {
+        User user = userRepository.findById(idUser)
                 .orElseThrow(() -> new RessourceNotFoundException("User", "idUser", idUser));
 
-        if (requestDTO.pseudoUser() != null && !requestDTO.pseudoUser().equalsIgnoreCase(existingUser.getPseudoUser())
-                && userRepository.existsByPseudoUser(requestDTO.pseudoUser())) {
-            throw new DuplicatedRessourcException("User", "pseudoUser", requestDTO.pseudoUser());
+        if (dto.pseudoUser() != null && !dto.pseudoUser().equals(user.getPseudoUser())) {
+            if (userRepository.existsByPseudoUser(dto.pseudoUser())) {
+                throw new DuplicatedRessourcException("User", "pseudoUser", dto.pseudoUser());
+            }
+            user.setPseudoUser(dto.pseudoUser());
         }
-
-        if (requestDTO.emailUser() != null && !requestDTO.emailUser().equalsIgnoreCase(existingUser.getEmailUser())
-                && userRepository.existsByEmailUser(requestDTO.emailUser())) {
-            throw new DuplicatedRessourcException("User", "emailUser", requestDTO.emailUser());
+        if (dto.emailUser() != null)  user.setEmailUser(dto.emailUser());
+        if (dto.phoneUser() != null)  user.setPhoneUser(dto.phoneUser());
+        if (dto.avatarUser() != null) user.setAvatarUser(dto.avatarUser());
+        if (dto.passwordUser() != null && !dto.passwordUser().isBlank()) {
+            user.setPasswordUser(passwordEncoder.encode(dto.passwordUser()));
         }
-
-        if (requestDTO.phoneUser() != null && !requestDTO.phoneUser().equalsIgnoreCase(existingUser.getPhoneUser())
-                && userRepository.existsByPhoneUser(requestDTO.phoneUser())) {
-            throw new DuplicatedRessourcException("User", "phoneUser", requestDTO.phoneUser());
-        }
-
-        //userMapper.updateEntityFromDTO(requestDTO, existingUser);
-        User updatedUser = userRepository.save(existingUser);
-        return userMapper.toDTO(updatedUser);
+        return userMapper.toDTO(userRepository.save(user));
     }
 
     @Override
@@ -117,35 +85,23 @@ public class UserService implements UserServiceInt {
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponseDTO getUserByEmail(String email) {
-        User user = userRepository.findByEmailUser(email)
-                .orElseThrow(() -> new RessourceNotFoundException("User", "emailUser", email));
-        return userMapper.toDTO(user);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public UserResponseDTO getUserByPseudo(String pseudo) {
-        User user = userRepository.findByPseudoUser(pseudo);
-        return userMapper.toDTO(user);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserResponseDTO> getAllUsers() {
+    public List<UserResponseDTO> findAllUsers() {
         return userMapper.toDTOList(userRepository.findAll());
     }
 
     @Override
-    public UserResponseDTO findUserByUserToken(String token) {
-        return userMapper.toDTO(userRepository.findByPseudoUser(token));
+    @Transactional(readOnly = true)
+    public UserResponseDTO findUserByUserToken(String pseudo) {
+        User user = userRepository.findByPseudoUser(pseudo)
+                .orElseThrow(() -> new RessourceNotFoundException("User", "pseudoUser", pseudo));
+        return userMapper.toDTO(user);
     }
 
     @Override
     @Transactional(readOnly = true)
-
     public List<UserResponseDTO> searchUsers(String token) {
-        return userMapper.toDTOList(userRepository.findAllByPseudoUserContainingIgnoreCase(token));
+        return userMapper.toDTOList(
+                userRepository.findAllByPseudoUserContainingIgnoreCase(token));
     }
 
     @Override
@@ -154,20 +110,5 @@ public class UserService implements UserServiceInt {
             throw new RessourceNotFoundException("User", "idUser", idUser);
         }
         userRepository.deleteById(idUser);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean verifyCredentials(String emailOrPhone, String password) {
-        Optional<User> userOptional = userRepository.findByEmailUserOrPhoneUser(emailOrPhone, emailOrPhone);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            return user.getPasswordUser() != null && user.getPasswordUser().equals(password);
-        }
-        return false;
-    }
-
-    private static boolean isBlank(String value) {
-        return value == null || value.isBlank();
     }
 }

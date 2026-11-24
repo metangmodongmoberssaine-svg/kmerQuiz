@@ -12,7 +12,10 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-    public User findByPseudoUser(String pseudoUser);
+
+    // Corrige : renvoie un Optional (obligatoire pour orElseThrow)
+    Optional<User> findByPseudoUser(String pseudoUser);
+
     Optional<User> findByEmailUser(String emailUser);
     Optional<User> findByPhoneUser(String phoneUser);
     Optional<User> findByEmailUserOrPhoneUser(String emailUser, String phoneUser);
@@ -26,6 +29,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     List<User> getAllByWithNoAvatar();
 
     @Modifying
-    @Query(value = "DELETE FROM User u WHERE u.pseudoUser = :pseudo AND u.idUser = :id")
+    @Query("DELETE FROM User u WHERE u.pseudoUser = :pseudo AND u.idUser = :id")
     void deleteByPseudoAndId(@Param("pseudo") String pseudoUser, @Param("id") String id);
 }
