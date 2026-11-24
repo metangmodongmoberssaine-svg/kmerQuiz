@@ -1,6 +1,7 @@
 package com.KmerQuiz.dto;
 
 import com.KmerQuiz.utils.RoleUser;
+import lombok.Getter;
 
 import java.util.Date;
 

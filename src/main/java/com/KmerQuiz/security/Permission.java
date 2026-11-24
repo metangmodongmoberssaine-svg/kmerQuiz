@@ -5,10 +5,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
+@RequiredArgsConstructor
 public enum Permission {
-    @Getter
-    @RequiredArgsConstructor
-    @AllArgsConstructor
     USER_CREATE("user:create"),
     USER_READ("user:read"),
     USER_UPDATE("user:update"),
@@ -36,7 +35,7 @@ public enum Permission {
     CATEGORY_CREATE("category:create"),
     CATEGORY_READ("category:read"),
     CATEGORY_UPDATE("category:update"),
-    CATEGORY_DELETE("category:delete"),
+    CATEGORY_DELETE("category:delete");
 
     private final String permission;
 }
