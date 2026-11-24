@@ -79,7 +79,7 @@ public class UserService implements UserServiceInt {
         user.setInscriptionDataUser(new Date());
 
         User savedUser = userRepository.save(user);
-        return userMapper.toResponseDTO(savedUser);
+        return userMapper.toDTO(savedUser);
     }
 
     @Override
@@ -102,9 +102,9 @@ public class UserService implements UserServiceInt {
             throw new DuplicatedRessourcException("User", "phoneUser", requestDTO.phoneUser());
         }
 
-        userMapper.updateEntityFromDTO(requestDTO, existingUser);
+        //userMapper.updateEntityFromDTO(requestDTO, existingUser);
         User updatedUser = userRepository.save(existingUser);
-        return userMapper.toResponseDTO(updatedUser);
+        return userMapper.toDTO(updatedUser);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class UserService implements UserServiceInt {
     public UserResponseDTO getUserById(String idUser) {
         User user = userRepository.findById(idUser)
                 .orElseThrow(() -> new RessourceNotFoundException("User", "idUser", idUser));
-        return userMapper.toResponseDTO(user);
+        return userMapper.toDTO(user);
     }
 
     @Override
@@ -120,27 +120,32 @@ public class UserService implements UserServiceInt {
     public UserResponseDTO getUserByEmail(String email) {
         User user = userRepository.findByEmailUser(email)
                 .orElseThrow(() -> new RessourceNotFoundException("User", "emailUser", email));
-        return userMapper.toResponseDTO(user);
+        return userMapper.toDTO(user);
     }
 
     @Override
     @Transactional(readOnly = true)
     public UserResponseDTO getUserByPseudo(String pseudo) {
-        User user = userRepository.findByPseudoUser(pseudo)
-                .orElseThrow(() -> new RessourceNotFoundException("User", "pseudoUser", pseudo));
-        return userMapper.toResponseDTO(user);
+        User user = userRepository.findByPseudoUser(pseudo);
+        return userMapper.toDTO(user);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<UserResponseDTO> getAllUsers() {
-        return userMapper.toResponseDTOList(userRepository.findAll());
+        return userMapper.toDTOList(userRepository.findAll());
+    }
+
+    @Override
+    public UserResponseDTO findUserByUserToken(String token) {
+        return userMapper.toDTO(userRepository.findByPseudoUser(token));
     }
 
     @Override
     @Transactional(readOnly = true)
+
     public List<UserResponseDTO> searchUsers(String token) {
-        return userMapper.toResponseDTOList(userRepository.findAllByPseudoUserContainingIgnoreCase(token));
+        return userMapper.toDTOList(userRepository.findAllByPseudoUserContainingIgnoreCase(token));
     }
 
     @Override

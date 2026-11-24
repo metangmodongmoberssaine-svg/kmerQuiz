@@ -13,11 +13,10 @@ public interface UserServiceInt {
     UserResponseDTO getUserByEmail(String email);
     UserResponseDTO getUserByPseudo(String pseudo);
     List<UserResponseDTO> getAllUsers();
-    List<UserResponseDTO> searchUsers(String token);
+    UserResponseDTO findUserByUserToken(String token);
     void deleteUser(String idUser);
     boolean verifyCredentials(String emailOrPhone, String password);
-
+    List<UserResponseDTO> searchUsers(String token);
     List<UserResponseDTO> findAllUsers();
-
     UserResponseDTO createUser(@Valid UserRequestDTO userRequestDTO);
 }

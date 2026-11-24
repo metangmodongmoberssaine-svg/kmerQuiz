@@ -17,10 +17,10 @@ public class UserPrincipalService implements UserDetailsService {
     private final UserRepository userRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = userRepository.findByPseudoUser(username);
-        if (user.isEmpty()) {
+        User user = userRepository.findByPseudoUser(username);
+        if (user == null ) {
             throw new UsernameNotFoundException(username);
         }
-        return new UserPrincipal(user.get());
+        return new UserPrincipal(user);
     }
 }

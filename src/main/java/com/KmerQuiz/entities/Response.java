@@ -1,9 +1,11 @@
 package com.KmerQuiz.entities;
 
+import com.KmerQuiz.dto.AuthResponseDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.ResponseEntity;
 
 @Data
 @AllArgsConstructor
@@ -24,6 +26,10 @@ public class Response {
     @ManyToOne
     @JoinColumn(name = "idQuestion", referencedColumnName = "idQuestion")
     private Question question;
+
+    public static ResponseEntity<AuthResponseDTO> ok(AuthResponseDTO bearer) {
+                return null;
+    }
 
     public Long getIdResponse() {
         return IdResponse;

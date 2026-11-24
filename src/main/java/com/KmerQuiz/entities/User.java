@@ -19,8 +19,10 @@ public class User {
     private String idUser;
 
     @Basic(optional = false)
+    @Column(length = 50, unique = true)
     private String pseudoUser;
 
+    @Column(length = 50, unique = true)
     private String emailUser;
 
     @Basic(optional = false)
