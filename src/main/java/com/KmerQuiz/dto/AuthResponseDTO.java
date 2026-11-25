@@ -1,8 +1,8 @@
 package com.KmerQuiz.dto;
 
-public record AuthResponseDTO<userResponseDTO>(
+public record AuthResponseDTO(
         String token,
         String tokenType,
-        userResponseDTO user
+        UserResponseDTO user
 ) {
 }

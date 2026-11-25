@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import org.springframework.web.cors.CorsConfiguration;
@@ -67,7 +69,8 @@ public class SecurityConfig {
                         // Routes publiques
                         .requestMatchers(
                                 "/api/v1/auth/login",
-                                "/api/v1/auth/register"
+                                "/api/v1/auth/register",
+                                "/error"
                         ).permitAll()
 
                         // Requêtes préliminaires CORS
@@ -77,7 +80,9 @@ public class SecurityConfig {
                         // Toutes les autres routes nécessitent une authentification
                         .anyRequest().authenticated()
                 )
-
+// Non authentifie => 401 (au lieu d'un 403 muet)
+                .exceptionHandling(e -> e.authenticationEntryPoint(
+                        new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 // Ajouter notre filtre JWT
                 .addFilterBefore(
                         jwtFilter,

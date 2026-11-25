@@ -1,5 +1,6 @@
 package com.KmerQuiz.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -33,17 +34,23 @@ public class JwtService {
 
     // Générer un token JWT
     public String generateToken(String username) {
-
+        Date now = new Date();
         return Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(
-                        new Date(System.currentTimeMillis() + expiration)
-                )
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + expiration))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
+    // Lire le contenu (claims) du token : verifie la signature et l'expiration
+    private Claims parseClaims(String token) {
 
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
     // Vérifier la validité du token
     public boolean validateToken(String token) {
 

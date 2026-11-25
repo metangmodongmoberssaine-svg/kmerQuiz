@@ -14,7 +14,7 @@ import com.KmerQuiz.repositories.UserRepository;
 import com.KmerQuiz.services.Interface.UserServiceInt;
 import com.KmerQuiz.utils.RoleUser;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.generator.Generator;
+import com.KmerQuiz.utils.Generator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

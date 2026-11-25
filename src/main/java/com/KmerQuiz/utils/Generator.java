@@ -2,9 +2,11 @@ package com.KmerQuiz.utils;
 
 import java.security.SecureRandom;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Generator {
-
+    // ... (supprimez : private Generator() { } )
     private static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String DIGITS = "0123456789";
     private static final String ALPHANUMERIC = UPPER + DIGITS;
@@ -60,6 +62,7 @@ public class Generator {
     }
 
     public String generateUserID(RoleUser roleUser) {
-            return null;
+        String prefix = (roleUser == RoleUser.Admin) ? "ADM" : "USR";
+        return prefix + randomString(DIGITS, 5);
     }
 }

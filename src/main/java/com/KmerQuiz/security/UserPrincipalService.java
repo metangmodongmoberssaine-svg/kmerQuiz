@@ -17,8 +17,13 @@ public class UserPrincipalService implements UserDetailsService {
     private final UserRepository userRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        // findByPseudoUser renvoie un Optional<User>
         User user = userRepository.findByPseudoUser(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        "Utilisateur introuvable : " + username));
+
         return new UserPrincipal(user);
     }
 }
+
